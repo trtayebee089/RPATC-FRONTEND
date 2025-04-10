@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@100..900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
     <style>
         .noto-serif-bengali-700 {
             font-family: "Noto Serif Bengali", serif;
@@ -27,16 +27,28 @@
             font-style: normal;
             font-variation-settings: "wdth" 100;
         }
-
     </style>
 </head>
 <body>
     <div class="container mt-5">
         <h1 class="mb-4 text-center noto-serif-bengali-700" style="font-size: 28px;">{{ $invitationDetails->email_header }}</h1>
-        <h3 class="mb-4 text-center noto-serif-bengali-700" style="font-size: 20px;">{{ session()->get('page_title') }}</h3>
+        <h3 class="mb-4 text-center noto-serif-bengali-700" style="font-size: 20px;">প্রশিক্ষণের জন্য কর্মচারীদের তালিকা</h3>
 
-        <form action="{{ route('registration.submit', $code) }}" method="POST">
+        <form action="{{ route('registration.submit', $code) }}" method="POST" id="training-form">
             @csrf
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="file_upload">
+                            যে কর্মচারীদের তালিকা প্রশিক্ষণ দিতে চান তা আপলোড করুন (PDF) 
+                            <small>সর্বাধিক আকার: ২MB</small>
+                        </label>
+                        <input type="hidden" id="dropzone-url" value="{{ route('registration.submit', $code) }}">
+                        <div class="my-dropzone"></div>
+                        <div id="dropzone-preview"></div>
+                    </div>
+                </div>
+            </div>
 
             <div id="trainee-wrapper">
                 <div class="trainee-group border p-3 mb-3">
@@ -101,7 +113,7 @@
             <div class="row">
                 <div class="col-md-6 m-auto text-center">
                     <button type="button" class="btn btn-secondary noto-serif-bengali-500" id="add-more">যোগ করুন</button>
-                    <button type="submit" class="btn btn-primary noto-serif-bengali-500">জমা দিন</button>
+                    <button type="submit" class="btn btn-primary noto-serif-bengali-500" id="submit-button">জমা দিন</button>
                 </div>
             </div>
         </form>
@@ -109,8 +121,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
     <script>
         $(document).ready(function () {
+            // Add more trainees dynamically
             $('#add-more').on('click', function () {
                 let newGroup = $('.trainee-group').first().clone();
                 newGroup.find('input').val(''); // clear inputs
@@ -121,6 +135,8 @@
             $(document).on('click', '.remove-btn', function () {
                 $(this).closest('.trainee-group').remove();
             });
+
+            const dropzone = new Dropzone("div.my-dropzone", { url: "/file/post" });
         });
     </script>
 
